@@ -26,22 +26,62 @@
 #ifndef PJCONV_PJ_CONVERTER_H_
 #define PJCONV_PJ_CONVERTER_H_
 
+#include <string>
 #include <google/protobuf/message.h>
 #include <json/json.h>
 
 namespace pjconv {
 
-/// @brief Protobuf and Json converter
+/**
+ * Protobuf and Json Converter
+ */
 class PJConverter {
  public:
   PJConverter();
   virtual ~PJConverter();
 
+  /**
+   * Convert a protobuf message to a JSON object
+   *
+   * @param message the input protobuf message
+   * @param json the output JSON object
+   * @return true if convert successfully
+   */
   bool Convert(const google::protobuf::Message& message, Json::Value* json) const;
+
+  /**
+   * Convert a protobuf message to a JSON string
+   *
+   * @param message the input protobuf message
+   * @param json the output JSON string
+   * @param styled whether to format the output string in a human friendly way
+   * @return true if convert successfully
+   */
+  bool Convert(
+      const google::protobuf::Message& message,
+      std::string* json,
+      bool styled = true) const;
+
+  /**
+   * Convert a JSON object to a protobuf message
+   *
+   * @param json the input JSON object
+   * @param message the output protobuf message
+   * @return true if convert successfully
+   */
   bool Convert(const Json::Value& json, google::protobuf::Message* message) const;
 
+  /**
+   * Convert a JSON string to a protobuf message
+   *
+   * @param json the input JSON string
+   * @param message the output protobuf message
+   * @return true if convert successfully
+   */
+  bool Convert(const std::string& json, google::protobuf::Message* message) const;
+
  private:
-  bool ConvertFromMessage(const google::protobuf::Message& message, Json::Value* json) const;
+  void ConvertFromMessage(const google::protobuf::Message& message, Json::Value* json) const;
 
   void ConvertFromSingelField(
       const google::protobuf::Message& message,

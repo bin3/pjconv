@@ -40,7 +40,24 @@ PJConverter::~PJConverter() {
 bool PJConverter::Convert(const pb::Message& message, Json::Value* json) const {
   if (!json) return false;
   json->clear();
-  return ConvertFromMessage(message, json);
+  ConvertFromMessage(message, json);
+  return true;
+}
+
+bool PJConverter::Convert(const pb::Message& message, std::string* json, bool styled) const {
+  if (!json) return false;
+  Json::Value value;
+  bool ret = Convert(message, &value);
+  if (ret) {
+    if (styled) {
+      Json::StyledWriter writer;
+      *json = writer.write(value);
+    } else {
+      Json::FastWriter writer;
+      *json = writer.write(value);
+    }
+  }
+  return ret;
 }
 
 bool PJConverter::Convert(const Json::Value& json, pb::Message* message) const {
@@ -50,7 +67,18 @@ bool PJConverter::Convert(const Json::Value& json, pb::Message* message) const {
   return true;
 }
 
-bool PJConverter::ConvertFromMessage(const pb::Message& message, Json::Value* json) const {
+bool PJConverter::Convert(const std::string& json, pb::Message* message) const {
+  if (!message) return false;
+  Json::Reader reader;
+  Json::Value value;
+  bool ret = reader.parse(json, value, false);
+  if (ret) {
+    ret = Convert(value, message);
+  }
+  return ret;
+}
+
+void PJConverter::ConvertFromMessage(const pb::Message& message, Json::Value* json) const {
   const pb::Descriptor* desc = message.GetDescriptor();
   const pb::Reflection *ref = message.GetReflection();
 
@@ -65,7 +93,6 @@ bool PJConverter::ConvertFromMessage(const pb::Message& message, Json::Value* js
       ConvertFromSingelField(message, ref, field, &out[name]);
     }
   }
-  return true;
 }
 
 void PJConverter::ConvertFromSingelField(

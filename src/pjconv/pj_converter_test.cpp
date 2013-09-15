@@ -30,12 +30,12 @@
 
 namespace pjconv {
 
-TEST(PJConverter, Convert) {
-  PJConverter conv;
-  tutorial::AddressBook ab;
-  Json::Value json;
+static const std::string kJsonString = "{\"person\":[{\"email\":\"bin3@gmail.com\",\"id\":0,"
+    "\"name\":\"bin3\",\"phone\":[{\"number\":\"10000\",\"type\":\"HOME\"},{\"number\":\"10001\","
+    "\"type\":\"WORK\"}]}]}\n";
 
-  tutorial::Person* person = ab.add_person();
+void Build(tutorial::AddressBook* ab) {
+  tutorial::Person* person = ab->add_person();
   person->set_name("bin3");
   person->set_id(0);
   person->set_email("bin3@gmail.com");
@@ -45,20 +45,46 @@ TEST(PJConverter, Convert) {
   number = person->add_phone();
   number->set_number("10001");
   number->set_type(tutorial::Person::WORK);
+}
 
-  EXPECT_TRUE(conv.Convert(ab, &json));
-  Json::FastWriter writer;
-  EXPECT_EQ("{\"person\":[{\"email\":\"bin3@gmail.com\",\"id\":0,\"name\":\"bin3\",\"phone\":[{\"number\":\"10000\",\"type\":\"HOME\"},{\"number\":\"10001\",\"type\":\"WORK\"}]}]}\n",
-            writer.write(json));
-
-  tutorial::AddressBook ab2;
-  EXPECT_TRUE(conv.Convert(json, &ab2));
-  ASSERT_EQ(1, ab2.person_size());
-  const tutorial::Person& person2 = ab2.person(0);
+void Check(const tutorial::AddressBook& ab) {
+  ASSERT_EQ(1, ab.person_size());
+  const tutorial::Person& person2 = ab.person(0);
   EXPECT_EQ("bin3", person2.name());
   ASSERT_EQ(2, person2.phone_size());
   EXPECT_EQ("10000", person2.phone(0).number());
   EXPECT_EQ("10001", person2.phone(1).number());
+}
+
+TEST(PJConverter, ConvertBetweenPbAndJson) {
+  PJConverter conv;
+
+  tutorial::AddressBook ab;
+  Build(&ab);
+
+  Json::Value json;
+  ASSERT_TRUE(conv.Convert(ab, &json));
+  Json::FastWriter writer;
+  EXPECT_EQ(kJsonString, writer.write(json));
+
+  tutorial::AddressBook ab2;
+  ASSERT_TRUE(conv.Convert(json, &ab2));
+  Check(ab2);
+}
+
+TEST(PJConverter, ConvertBetweenPbAndString) {
+  PJConverter conv;
+
+  tutorial::AddressBook ab;
+  Build(&ab);
+
+  std::string json;
+  ASSERT_TRUE(conv.Convert(ab, &json, false));
+  ASSERT_EQ(kJsonString, json);
+
+  tutorial::AddressBook ab2;
+  ASSERT_TRUE(conv.Convert(json, &ab2));
+  Check(ab2);
 }
 
 }
