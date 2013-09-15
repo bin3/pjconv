@@ -25,7 +25,7 @@
 
 #include <gtest/gtest.h>
 
-#include "pjconv/pj_converter.h"
+#include "pjconv/pjconv.h"
 #include "pjconv/proto/addressbook.pb.h"
 
 namespace pjconv {

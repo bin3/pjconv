@@ -25,7 +25,7 @@
 
 #include <google/protobuf/descriptor.h>
 
-#include "pj_converter.h"
+#include "pjconv/pjconv.h"
 
 namespace pjconv {
 
