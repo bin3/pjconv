@@ -13,23 +13,15 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CXX_FLAGS
- -g
- #-DVALGRIND
  -Wall
  -Wextra
- #-m32
  -Werror
- #-Wconversion
  -Wno-unused-parameter
  -Wold-style-cast
  -Woverloaded-virtual
  -Wpointer-arith
  -Wshadow
  -Wwrite-strings
- #-march=native
- #-MMD
- -std=c++0x
- -fopenmp
  )
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
@@ -110,9 +102,8 @@ function(add_test name)
     endif()
   endif()
   message(STATUS "[add_test] name=${name}, libs=${libs}")
-
-	add_executable(${name} ${name})
-	target_link_libraries(${name} ${libs})
+  add_executable(${name} ${name})
+  target_link_libraries(${name} ${libs})
 endfunction()	
 
 add_subdirectory(src)
