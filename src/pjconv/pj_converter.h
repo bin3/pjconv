@@ -41,12 +41,54 @@ class PJConverter {
   bool Convert(const Json::Value& json, google::protobuf::Message* message) const;
 
  private:
-  bool ConvertMessage(const google::protobuf::Message& message,
-                      Json::Value* json) const;
-  void ConvertRepeated(const google::protobuf::Message& message,
-                       const google::protobuf::Reflection *ref,
-                       const google::protobuf::FieldDescriptor* field,
-                       Json::Value* json) const;
+  bool ConvertFromMessage(const google::protobuf::Message& message, Json::Value* json) const;
+
+  void ConvertFromSingelField(
+      const google::protobuf::Message& message,
+      const google::protobuf::Reflection *ref,
+      const google::protobuf::FieldDescriptor* field,
+      Json::Value* json) const;
+
+  void ConvertFromRepeatedField(
+      const google::protobuf::Message& message,
+      const google::protobuf::Reflection *ref,
+      const google::protobuf::FieldDescriptor* field,
+      Json::Value* json) const;
+
+  void ConvertToMessage(const Json::Value& json, google::protobuf::Message* message) const;
+
+  void ConvertToSingleField(
+      const Json::Value& json,
+      google::protobuf::Message* message,
+      const google::protobuf::Descriptor* desc,
+      const google::protobuf::Reflection* ref,
+      const google::protobuf::FieldDescriptor* field) const;
+
+  void ConvertToRepeatedField(
+      const Json::Value& json,
+      google::protobuf::Message* message,
+      const google::protobuf::Descriptor* desc,
+      const google::protobuf::Reflection* ref,
+      const google::protobuf::FieldDescriptor* field) const;
+
+  template<typename Checker, typename Getter, typename Setter>
+  void SetField(
+      const Json::Value& json,
+      google::protobuf::Message* message,
+      const google::protobuf::Reflection* ref,
+      const google::protobuf::FieldDescriptor* field,
+      Checker checker,
+      Getter getter,
+      Setter setter) const;
+
+  template<typename Setter>
+  void SetEnumField(
+      const Json::Value& json,
+      google::protobuf::Message* message,
+      const google::protobuf::Descriptor* desc,
+      const google::protobuf::Reflection* ref,
+      const google::protobuf::FieldDescriptor* field,
+      Setter setter) const;
 };
 
 }  // namespace pjconv

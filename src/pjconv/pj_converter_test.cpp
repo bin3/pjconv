@@ -48,8 +48,17 @@ TEST(PJConverter, Convert) {
 
   EXPECT_TRUE(conv.Convert(ab, &json));
   Json::FastWriter writer;
-  EXPECT_EQ("{\"person\":[{\"email\":\"bin3@gmail.com\",\"id\":0,\"name\":\"bin3\",\"phone\":[{\"number\":\"10000\",\"type\":1},{\"number\":\"10001\",\"type\":2}]}]}\n",
+  EXPECT_EQ("{\"person\":[{\"email\":\"bin3@gmail.com\",\"id\":0,\"name\":\"bin3\",\"phone\":[{\"number\":\"10000\",\"type\":\"HOME\"},{\"number\":\"10001\",\"type\":\"WORK\"}]}]}\n",
             writer.write(json));
+
+  tutorial::AddressBook ab2;
+  EXPECT_TRUE(conv.Convert(json, &ab2));
+  ASSERT_EQ(1, ab2.person_size());
+  const tutorial::Person& person2 = ab2.person(0);
+  EXPECT_EQ("bin3", person2.name());
+  ASSERT_EQ(2, person2.phone_size());
+  EXPECT_EQ("10000", person2.phone(0).number());
+  EXPECT_EQ("10001", person2.phone(1).number());
 }
 
 }
