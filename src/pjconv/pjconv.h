@@ -45,22 +45,28 @@ class PJConverter {
    *
    * @param message the input protobuf message
    * @param json the output JSON object
+   * @param whether to convert the unset fields in the protobuf message
    * @return true if convert successfully
    */
-  bool Convert(const google::protobuf::Message& message, Json::Value* json) const;
+  bool Convert(
+      const google::protobuf::Message& message,
+      Json::Value* json,
+      bool convert_unset_fields = true) const;
 
   /**
    * Convert a protobuf message to a JSON string
    *
    * @param message the input protobuf message
    * @param json the output JSON string
+   * @param whether to convert the unset fields in the protobuf message
    * @param styled whether to format the output string in a human friendly way
    * @return true if convert successfully
    */
   bool Convert(
       const google::protobuf::Message& message,
       std::string* json,
-      bool styled = true) const;
+      bool styled = true,
+      bool convert_unset_fields = true) const;
 
   /**
    * Convert a JSON object to a protobuf message
@@ -129,6 +135,8 @@ class PJConverter {
       const google::protobuf::Reflection* ref,
       const google::protobuf::FieldDescriptor* field,
       Setter setter) const;
+
+  mutable bool convert_unset_fields_;
 };
 
 }  // namespace pjconv

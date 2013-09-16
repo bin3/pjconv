@@ -31,23 +31,31 @@ namespace pjconv {
 
 namespace pb = google::protobuf;
 
-PJConverter::PJConverter() {
+PJConverter::PJConverter() : convert_unset_fields_(true) {
 }
 
 PJConverter::~PJConverter() {
 }
 
-bool PJConverter::Convert(const pb::Message& message, Json::Value* json) const {
+bool PJConverter::Convert(
+    const pb::Message& message,
+    Json::Value* json,
+    bool convert_unset_fields) const {
   if (!json) return false;
   json->clear();
+  convert_unset_fields_ = convert_unset_fields;
   ConvertFromMessage(message, json);
   return true;
 }
 
-bool PJConverter::Convert(const pb::Message& message, std::string* json, bool styled) const {
+bool PJConverter::Convert(
+    const pb::Message& message,
+    std::string* json,
+    bool styled,
+    bool convert_unset_fields) const {
   if (!json) return false;
   Json::Value value;
-  bool ret = Convert(message, &value);
+  bool ret = Convert(message, &value, convert_unset_fields);
   if (ret) {
     if (styled) {
       Json::StyledWriter writer;
@@ -88,8 +96,10 @@ void PJConverter::ConvertFromMessage(const pb::Message& message, Json::Value* js
     const pb::FieldDescriptor* field = desc->field(i);
     const std::string& name = field->name();
     if (field->is_repeated()) {
-      ConvertFromRepeatedField(message, ref, field, &out[name]);
-    } else {
+      if (ref->FieldSize(message, field) > 0) {
+        ConvertFromRepeatedField(message, ref, field, &out[name]);
+      }
+    } else if (convert_unset_fields_ || ref->HasField(message, field)) {
       ConvertFromSingelField(message, ref, field, &out[name]);
     }
   }
@@ -179,7 +189,7 @@ void PJConverter::ConvertFromRepeatedField(
       break;
     case pb::FieldDescriptor::CPPTYPE_ENUM:
       for (int i = 0; i < n; ++i) {
-        json->append(ref->GetRepeatedEnum(message, field, i)->number());
+        json->append(ref->GetRepeatedEnum(message, field, i)->name());
       }
       break;
     case pb::FieldDescriptor::CPPTYPE_STRING:

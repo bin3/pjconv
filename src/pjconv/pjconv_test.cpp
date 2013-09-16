@@ -32,7 +32,11 @@ namespace pjconv {
 
 static const std::string kJsonString = "{\"person\":[{\"email\":\"bin3@gmail.com\",\"id\":0,"
     "\"name\":\"bin3\",\"phone\":[{\"number\":\"10000\",\"type\":\"HOME\"},{\"number\":\"10001\","
-    "\"type\":\"WORK\"}]}]}\n";
+    "\"type\":\"WORK\"}]},{\"email\":\"\",\"id\":0,\"name\":\"pb\"}]}\n";
+
+static const std::string kJsonString2 = "{\"person\":[{\"email\":\"bin3@gmail.com\",\"id\":0,"
+    "\"name\":\"bin3\",\"phone\":[{\"number\":\"10000\",\"type\":\"HOME\"},{\"number\":\"10001\","
+    "\"type\":\"WORK\"}]},{\"name\":\"pb\"}]}\n";
 
 void Build(tutorial::AddressBook* ab) {
   tutorial::Person* person = ab->add_person();
@@ -45,10 +49,13 @@ void Build(tutorial::AddressBook* ab) {
   number = person->add_phone();
   number->set_number("10001");
   number->set_type(tutorial::Person::WORK);
+
+  person = ab->add_person();
+  person->set_name("pb");
 }
 
 void Check(const tutorial::AddressBook& ab) {
-  ASSERT_EQ(1, ab.person_size());
+  ASSERT_EQ(2, ab.person_size()) << "ab: " << ab.Utf8DebugString();
   const tutorial::Person& person2 = ab.person(0);
   EXPECT_EQ("bin3", person2.name());
   ASSERT_EQ(2, person2.phone_size());
@@ -80,7 +87,10 @@ TEST(PJConverter, ConvertBetweenPbAndString) {
 
   std::string json;
   ASSERT_TRUE(conv.Convert(ab, &json, false));
-  ASSERT_EQ(kJsonString, json);
+  EXPECT_EQ(kJsonString, json);
+
+  ASSERT_TRUE(conv.Convert(ab, &json, false, false));
+  EXPECT_EQ(kJsonString2, json);
 
   tutorial::AddressBook ab2;
   ASSERT_TRUE(conv.Convert(json, &ab2));
