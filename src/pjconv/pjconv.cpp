@@ -115,13 +115,13 @@ void PJConverter::ConvertFromSingelField(
       *json = ref->GetInt32(message, field);
       break;
     case pb::FieldDescriptor::CPPTYPE_INT64:
-      *json = ref->GetInt64(message, field);
+      *json = static_cast<Json::Int64>(ref->GetInt64(message, field));
       break;
     case pb::FieldDescriptor::CPPTYPE_UINT32:
       *json = ref->GetUInt32(message, field);
       break;
     case pb::FieldDescriptor::CPPTYPE_UINT64:
-      *json = ref->GetUInt64(message, field);
+      *json = static_cast<Json::UInt64>(ref->GetUInt64(message, field));
       break;
     case pb::FieldDescriptor::CPPTYPE_DOUBLE:
       *json = ref->GetDouble(message, field);
@@ -159,7 +159,7 @@ void PJConverter::ConvertFromRepeatedField(
       break;
     case pb::FieldDescriptor::CPPTYPE_INT64:
       for (int i = 0; i < n; ++i) {
-        json->append(ref->GetRepeatedInt64(message, field, i));
+        json->append(static_cast<Json::Int64>(ref->GetRepeatedInt64(message, field, i)));
       }
       break;
     case pb::FieldDescriptor::CPPTYPE_UINT32:
@@ -169,7 +169,7 @@ void PJConverter::ConvertFromRepeatedField(
       break;
     case pb::FieldDescriptor::CPPTYPE_UINT64:
       for (int i = 0; i < n; ++i) {
-        json->append(ref->GetRepeatedUInt64(message, field, i));
+        json->append(static_cast<Json::UInt64>(ref->GetRepeatedUInt64(message, field, i)));
       }
       break;
     case pb::FieldDescriptor::CPPTYPE_DOUBLE:
@@ -373,3 +373,11 @@ void PJConverter::SetEnumField(
 }
 
 }  // namespace pjconv
+
+//gzrd_Lib_CPP_Version_ID--start
+#ifndef GZRD_SVN_ATTR
+#define GZRD_SVN_ATTR "0"
+#endif
+static char gzrd_Lib_CPP_Version_ID[] __attribute__((used))="$HeadURL$ $Id$ " GZRD_SVN_ATTR "__file__";
+// gzrd_Lib_CPP_Version_ID--end
+

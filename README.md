@@ -15,7 +15,7 @@ make install
 ```
 ## Dependencies
 * [protobuf](http://code.google.com/p/protobuf/)
-* [jsoncpp](http://jsoncpp.sourceforge.net/)
+* [jsoncpp](https://github.com/mrtazz/json-cpp)
 
 
 ## Usage
